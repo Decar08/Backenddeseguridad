@@ -1,5 +1,7 @@
 package Grupo2.Registraduria.seguridad.Controladores;
+import Grupo2.Registraduria.seguridad.Modelos.Rol;
 import Grupo2.Registraduria.seguridad.Modelos.Usuario;
+import Grupo2.Registraduria.seguridad.Repositorios.RepositorioRol;
 import Grupo2.Registraduria.seguridad.Repositorios.RepositorioUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,9 @@ import java.security.NoSuchAlgorithmException;
 public class ControladorUsuario {
     @Autowired
     private RepositorioUsuario miRepositorioUsuario;
+
+    @Autowired
+    private RepositorioRol miRepositorioRol;
 
     @GetMapping("")
     public List<Usuario> index(){
@@ -59,6 +64,22 @@ public class ControladorUsuario {
         }else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El Id del usuario ingresado no existe");
         }
+    }
+    @PutMapping("{id}/rol/{id_rol}")
+    public Usuario asignarRolAUsuario(@PathVariable String id,@PathVariable String id_rol){
+        Usuario usuarioActual=this.miRepositorioUsuario
+                                    .findById(id)
+                                    .orElse(null);
+        Rol rolActual=this.miRepositorioRol
+                                    .findById(id_rol)
+                                    .orElse(null);
+        if (usuarioActual!=null && rolActual!=null){
+            usuarioActual.setRol(rolActual);
+            return this.miRepositorioUsuario.save(usuarioActual);
+        }else{
+            return null;
+        }
+
     }
     public String convertirSHA256(String password) {
         MessageDigest md = null;
