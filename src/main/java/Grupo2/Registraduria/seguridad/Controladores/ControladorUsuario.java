@@ -68,18 +68,16 @@ public class ControladorUsuario {
     @PutMapping("{id}/rol/{id_rol}")
     public Usuario asignarRolAUsuario(@PathVariable String id,@PathVariable String id_rol){
         Usuario usuarioActual=this.miRepositorioUsuario
-                                    .findById(id)
-                                    .orElse(null);
-        Rol rolActual=this.miRepositorioRol
-                                    .findById(id_rol)
-                                    .orElse(null);
-        if (usuarioActual!=null && rolActual!=null){
-            usuarioActual.setRol(rolActual);
-            return this.miRepositorioUsuario.save(usuarioActual);
-        }else{
-            return null;
+                .findById(id)
+                .orElse(null);
+        if (usuarioActual == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El usuario no existe");
         }
-
+        Rol rolActual=this.miRepositorioRol
+            .findById(id_rol)
+            .orElse(null);
+        usuarioActual.setRol(rolActual);
+        return this.miRepositorioUsuario.save(usuarioActual);
     }
     public String convertirSHA256(String password) {
         MessageDigest md = null;
